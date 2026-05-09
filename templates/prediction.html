@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Add Student Record - UAF</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-950 text-gray-100 min-h-screen">
+
+    <!-- Navbar -->
+    <nav class="bg-gray-900 border-b border-gray-800 sticky top-0 z-50">
+
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+
+            <h2 class="text-2xl font-bold text-blue-400">
+                UAF Performance
+            </h2>
+
+            <a href="{{ url_for('dashboard') }}"
+               class="text-gray-400 hover:text-white flex items-center gap-2 transition-all">
+                ← Back to Dashboard
+            </a>
+
+        </div>
+
+    </nav>
+
+    <!-- Main -->
+    <div class="max-w-6xl mx-auto px-6 py-10">
+
+        <!-- Title -->
+        <div class="mb-10">
+
+            <h1 class="text-5xl font-bold mb-3">
+                Add New Student Academic Record
+            </h1>
+
+            <p class="text-gray-400 text-lg">
+                Professor Portal - Complete Student Performance Entry
+            </p>
+
+        </div>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for cat, msg in messages %}
+
+                    <div class="p-5 mb-8 rounded-3xl text-center font-medium border
+                        {% if cat == 'success' %}
+                            bg-green-900/40 border-green-700 text-green-300
+                        {% else %}
+                            bg-red-900/40 border-red-700 text-red-300
+                        {% endif %}">
+                        {{ msg }}
+                    </div>
+
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Form -->
+        <form method="POST" id="studentForm">
+
+            <!-- Student Basic Information -->
+            <div class="bg-gray-900 border border-gray-800 rounded-[2rem] p-8 mb-12">
+
+                <h2 class="text-3xl font-bold mb-8">
+                    🎓 Student Information
+                </h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+
+                    <!-- Student Name -->
+                    <div>
+                        <label class="block text-sm font-medium mb-3">
+                            Student Full Name
+                        </label>
+
+                        <input
+                            type="text"
+                            name="student_name"
+                            required
+                            class="w-full bg-gray-800 border border-gray-700 rounded-2xl px-6 py-4 text-lg outline-none focus:border-blue-500"
+                        >
+                    </div>
+
+                    <!-- AG Number -->
+                    <div>
+                        <label class="block text-sm font-medium mb-3">
+                            AG Number
+                        </label>
+
+                        <input
+                            type="text"
+                            name="ag_number"
+                            placeholder="2024-AG-1234"
+                            required
+                            class="w-full bg-gray-800 border border-gray-700 rounded-2xl px-6 py-4 text-lg outline-none focus:border-blue-500"
+                        >
+                    </div>
+
+                    <!-- Section -->
+                    <div>
+                        <label class="block text-sm font-medium mb-3">
+                            Section
+                        </label>
+
+                        <select
+                            name="section"
+                            class="w-full bg-gray-800 border border-gray-700 rounded-2xl px-6 py-4 text-lg outline-none focus:border-blue-500">
+
+                            <option value="M1">M1</option>
+                            <option value="M2">M2</option>
+                            <option value="E1">E1</option>
+                            <option value="E2">E2</option>
+                            <option value="E3">E3</option>
+                            <option value="E4">E4</option>
+
+                        </select>
+                    </div>
+
+                    <!-- Degree -->
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium mb-3">
+                            Degree Program
+                        </label>
+
+                        <select
+                            name="degree"
+                            class="w-full bg-gray-800 border border-gray-700 rounded-2xl px-6 py-4 text-lg outline-none focus:border-blue-500">
+
+                            <option value="BS Computer Science">BS Computer Science</option>
+                            <option value="BS Information Technology">BS Information Technology</option>
+                            <option value="BS Software Engineering">BS Software Engineering</option>
+                            <option value="BS Artificial Intelligence">BS Artificial Intelligence</option>
+                            <option value="BS Data Science">BS Data Science</option>
+                            <option value="BBA">BBA</option>
+                            <option value="MBA">MBA</option>
+                            <option value="BS Mathematics">BS Mathematics</option>
+                            <option value="BS Physics">BS Physics</option>
+                            <option value="BS Chemistry">BS Chemistry</option>
+                            <option value="BS Statistics">BS Statistics</option>
+                            <option value="Doctor of Veterinary Medicine">Doctor of Veterinary Medicine</option>
+                            <option value="BSc Agriculture">BSc Agriculture</option>
+                            <option value="BS Biotechnology">BS Biotechnology</option>
+
+                        </select>
+                    </div>
+
+                    <!-- Shift -->
+                    <div>
+                        <label class="block text-sm font-medium mb-3">
+                            Shift
+                        </label>
+
+                        <select
+                            name="shift"
+                            class="w-full bg-gray-800 border border-gray-700 rounded-2xl px-6 py-4 text-lg outline-none focus:border-blue-500">
+
+                            <option value="Morning">Morning</option>
+                            <option value="Evening">Evening</option>
+
+                        </select>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Subjects Section -->
+            <div class="flex justify-between items-center mb-8">
+
+                <h3 class="text-3xl font-bold flex items-center gap-3">
+                    📚 Subject-wise Performance
+                </h3>
+
+                <button
+                    type="button"
+                    onclick="addSubject()"
+                    class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-2xl font-medium transition-all">
+                    + Add Subject
+                </button>
+
+            </div>
+
+            <!-- Subjects Container -->
+            <div id="subjectsContainer" class="space-y-10"></div>
+
+            <!-- Submit -->
+            <button
+                type="submit"
+                class="w-full mt-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 py-6 rounded-[2rem] text-2xl font-bold transition-all">
+
+                Save Student Record & Calculate Grades
+
+            </button>
+
+        </form>
+
+    </div>
+
+    <!-- Script -->
+    <script>
+
+        let subjectCount = 0;
+
+        function addSubject() {
+
+            subjectCount++;
+
+            const container = document.getElementById('subjectsContainer');
+
+            const div = document.createElement('div');
+
+            div.className = "bg-gray-900 border border-gray-800 rounded-[2rem] p-8";
+
+            div.innerHTML = `
+
+                <div class="flex justify-between items-center mb-8">
+
+                    <h4 class="text-2xl font-bold">
+                        Subject ${subjectCount}
+                    </h4>
+
+                    <button
+                        type="button"
+                        onclick="this.closest('.bg-gray-900').remove()"
+                        class="bg-red-600 hover:bg-red-700 w-12 h-12 rounded-2xl text-2xl font-bold transition-all">
+
+                        ×
+
+                    </button>
+
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+
+                    <!-- Subject Name -->
+                    <div class="xl:col-span-2">
+
+                        <label class="block text-sm font-medium mb-3">
+                            Subject Name
+                        </label>
+
+                        <input
+                            type="text"
+                            name="subject_name_${subjectCount}"
+                            required
+                            placeholder="e.g. Database Systems"
+                            class="w-full bg-gray-800 border border-gray-700 rounded-2xl px-5 py-4 outline-none focus:border-blue-500"
+                        >
+
+                    </div>
+
+                    <!-- Subject ID -->
+                    <div>
+
+                        <label class="block text-sm font-medium mb-3">
+                            Subject ID
+                        </label>
+
+                        <input
+                            type="text"
+                            name="subject_id_${subjectCount}"
+                            placeholder="CS-301"
+                            class="w-full bg-gray-800 border border-gray-700 rounded-2xl px-5 py-4 outline-none focus:border-blue-500"
+                        >
+
+                    </div>
+
+                    <!-- Credit Hours -->
+                    <div>
+
+                        <label class="block text-sm font-medium mb-3">
+                            Credit Hours
+                        </label>
+
+                        <select
+                            name="credit_hours_${subjectCount}"
+                            class="w-full bg-gray-800 border border-gray-700 rounded-2xl px-5 py-4 outline-none focus:border-blue-500">
+
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3" selected>3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+
+                        </select>
+
+                    </div>
+
+                    <!-- Mid -->
+                    <div>
+
+                        <label class="block text-sm font-medium mb-3">
+                            Mid Marks
+                        </label>
+
+                        <input
+                            type="number"
+                            step="any"
+                            name="mid_${subjectCount}"
+                            value="25"
+                            class="w-full bg-gray-800 border border-gray-700 rounded-2xl px-5 py-4 outline-none focus:border-blue-500"
+                        >
+
+                    </div>
+
+                    <!-- Sessional -->
+                    <div>
+
+                        <label class="block text-sm font-medium mb-3">
+                            Sessional Marks
+                        </label>
+
+                        <input
+                            type="number"
+                            step="any"
+                            name="sessional_${subjectCount}"
+                            value="20"
+                            class="w-full bg-gray-800 border border-gray-700 rounded-2xl px-5 py-4 outline-none focus:border-blue-500"
+                        >
+
+                    </div>
+
+                    <!-- Final -->
+                    <div>
+
+                        <label class="block text-sm font-medium mb-3">
+                            Final Marks
+                        </label>
+
+                        <input
+                            type="number"
+                            step="any"
+                            name="final_${subjectCount}"
+                            value="55"
+                            class="w-full bg-gray-800 border border-gray-700 rounded-2xl px-5 py-4 outline-none focus:border-blue-500"
+                        >
+
+                    </div>
+
+                    <!-- Total -->
+                    <div>
+
+                        <label class="block text-sm font-medium mb-3">
+                            Total Marks
+                        </label>
+
+                        <input
+                            type="number"
+                            step="any"
+                            name="total_${subjectCount}"
+                            value="100"
+                            class="w-full bg-gray-800 border border-gray-700 rounded-2xl px-5 py-4 font-medium outline-none focus:border-blue-500"
+                        >
+
+                    </div>
+
+                </div>
+
+            `;
+
+            container.appendChild(div);
+        }
+
+        // Add first subject automatically
+        window.onload = function () {
+            addSubject();
+        };
+
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Detail - UAF</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="navbar">
+        <h2>Student Details</h2>
+        <a href="{{ url_for('dashboard') }}" class="btn">Back to Dashboard</a>
+    </div>
+
+    <div class="container">
+        <div class="card">
+            <h2>{{ student.student_name }}</h2>
+            <p><strong>AG Number:</strong> {{ student.ag_number }}</p>
+            <p><strong>checked on:</strong> {{ student.created_at }}</p>
+
+            <h3 style="margin-top:30px;">Subject-wise Performance</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Subject</th>
+                        <th>Obtained</th>
+                        <th>Total</th>
+                        <th>Percentage</th>
+                        <th>Grade</th>
+                        <th>Grade Point</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sub in subjects %}
+                    <tr>
+                        <td>{{ sub.subject_name }}</td>
+                        <td>{{ sub.obtained_marks }}</td>
+                        <td>{{ sub.total_marks }}</td>
+                        <td><b>{{ sub.percentage }}%</b></td>
+                        <td class="{% if sub.grade == 'A' or sub.grade == 'A-' %}grade-A{% elif sub.grade == 'F' %}grade-F{% endif %}">
+                            <b>{{ sub.grade }}</b>
+                        </td>
+                        <td>{{ sub.grade_point }}</td>
+                        <td>{{ sub.status }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

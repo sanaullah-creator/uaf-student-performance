@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Result Sheet - UAF Performance</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        @media print {
+
+            .no-print {
+                display: none !important;
+            }
+
+            body {
+                background: white !important;
+                color: black !important;
+            }
+
+            .print-white {
+                background: white !important;
+                color: black !important;
+                border: 1px solid #d1d5db !important;
+                box-shadow: none !important;
+            }
+
+            input,
+            select {
+                border: none !important;
+                background: transparent !important;
+                color: black !important;
+            }
+
+            table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+            th,
+            td {
+                border: 1px solid black !important;
+                padding: 12px;
+            }
+        }
+
+        input::placeholder {
+            color: #94a3b8;
+        }
+    </style>
+</head>
+
+<body class="bg-gradient-to-br from-gray-950 via-slate-950 to-black text-white min-h-screen">
+
+    <!-- Navbar -->
+    <nav class="bg-gray-900/95 border-b border-gray-800 sticky top-0 z-50 backdrop-blur no-print">
+
+        <div class="max-w-7xl mx-auto px-6 py-4 flex flex-col lg:flex-row justify-between items-center gap-4">
+
+            <h2 class="text-3xl font-black tracking-wide bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent">
+                UAF Performance
+            </h2>
+
+            <div class="flex flex-wrap gap-3">
+
+                <a href="{{ url_for('prediction') }}"
+                   class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:scale-105 hover:shadow-blue-500/40 shadow-lg px-6 py-3 rounded-2xl font-semibold transition-all duration-300">
+                    + Add Student
+                </a>
+
+                <a href="{{ url_for('dashboard') }}"
+                   class="bg-gray-700 hover:bg-gray-600 hover:scale-105 px-6 py-3 rounded-2xl font-semibold transition-all duration-300">
+                    Dashboard
+                </a>
+
+                <a href="{{ url_for('export_excel') }}"
+                   class="bg-emerald-600 hover:bg-emerald-700 hover:scale-105 shadow-lg shadow-emerald-500/30 px-6 py-3 rounded-2xl font-semibold transition-all duration-300">
+                    📥 Export Excel
+                </a>
+
+                <button onclick="window.print()"
+                        class="bg-violet-600 hover:bg-violet-700 hover:scale-105 shadow-lg shadow-violet-500/30 px-6 py-3 rounded-2xl font-semibold transition-all duration-300">
+                    🖨 Print
+                </button>
+
+                <a href="{{ url_for('logout') }}"
+                   class="bg-red-600 hover:bg-red-700 hover:scale-105 shadow-lg shadow-red-500/30 px-6 py-3 rounded-2xl font-semibold transition-all duration-300">
+                    Logout
+                </a>
+
+            </div>
+
+        </div>
+
+    </nav>
+
+    <!-- Main Container -->
+    <div class="max-w-7xl mx-auto px-6 py-10">
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for cat, msg in messages %}
+                    <div class="mb-8 p-5 rounded-3xl border text-center text-lg font-semibold
+                        {% if cat == 'success' %}
+                            bg-green-900/30 border-green-500 text-green-300
+                        {% else %}
+                            bg-red-900/30 border-red-500 text-red-300
+                        {% endif %}">
+                        {{ msg }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Header Card -->
+        <div class="bg-gradient-to-br from-gray-900 to-slate-900 border border-gray-800 shadow-2xl shadow-blue-900/10 rounded-[2.5rem] p-8 mb-10 print-white">
+
+            <div class="flex flex-col xl:flex-row gap-10 justify-between">
+
+                <!-- LEFT -->
+                <div class="flex-1">
+
+                    <div class="mb-10">
+
+                        <h1 class="text-6xl font-black tracking-tight mb-4">
+                            Result Sheet
+                        </h1>
+
+                        <p class="text-gray-400 text-xl">
+                            University of Agriculture Faisalabad
+                        </p>
+
+                    </div>
+
+                    <!-- FORM -->
+                    <form method="GET">
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+
+                            <!-- Subject Name -->
+                            <div class="bg-black/40 border border-gray-800 rounded-3xl p-6 hover:border-blue-500 transition-all duration-300">
+
+                                <label class="block text-sm text-gray-400 mb-3 uppercase tracking-wider font-semibold">
+                                    Subject Name
+                                </label>
+
+                                <input
+                                    type="text"
+                                    name="subject_name"
+                                    value="{{ request.args.get('subject_name', '') }}"
+                                    placeholder="Enter Subject Name"
+                                    class="w-full bg-transparent text-2xl font-bold outline-none text-white"
+                                >
+
+                            </div>
+
+                            <!-- Subject ID -->
+                            <div class="bg-black/40 border border-gray-800 rounded-3xl p-6 hover:border-cyan-500 transition-all duration-300">
+
+                                <label class="block text-sm text-gray-400 mb-3 uppercase tracking-wider font-semibold">
+                                    Subject ID
+                                </label>
+
+                                <input
+                                    type="text"
+                                    name="subject_id"
+                                    value="{{ request.args.get('subject_id', '') }}"
+                                    placeholder="CS-301"
+                                    class="w-full bg-transparent text-2xl font-bold outline-none text-cyan-400"
+                                >
+
+                            </div>
+
+                            <!-- Professor Name -->
+                            <div class="bg-black/40 border border-gray-800 rounded-3xl p-6 hover:border-orange-500 transition-all duration-300">
+
+                                <label class="block text-sm text-gray-400 mb-3 uppercase tracking-wider font-semibold">
+                                    Professor Name
+                                </label>
+
+                                <input
+                                    type="text"
+                                    name="professor_name"
+                                    value="{{ request.args.get('professor_name', session.user_name) }}"
+                                    placeholder="Professor Name"
+                                    class="w-full bg-transparent text-2xl font-bold outline-none text-orange-400"
+                                >
+
+                            </div>
+
+                            <!-- Degree -->
+                            <div class="bg-black/40 border border-gray-800 rounded-3xl p-6 hover:border-indigo-500 transition-all duration-300">
+
+                                <label class="block text-sm text-gray-400 mb-3 uppercase tracking-wider font-semibold">
+                                    Degree Program
+                                </label>
+
+                                <select
+                                    name="degree"
+                                    class="w-full bg-transparent text-xl font-bold outline-none text-white"
+                                >
+                                    <option class="bg-gray-900">BS Computer Science</option>
+                                    <option class="bg-gray-900">BS Information Technology</option>
+                                    <option class="bg-gray-900">BS Software Engineering</option>
+                                    <option class="bg-gray-900">BS Artificial Intelligence</option>
+                                    <option class="bg-gray-900">BS Cyber Security</option>
+                                    <option class="bg-gray-900">BS Data Science</option>
+                                    <option class="bg-gray-900">BBA</option>
+                                    <option class="bg-gray-900">MBA</option>
+                                    <option class="bg-gray-900">DVM</option>
+                                    <option class="bg-gray-900">BSc Agriculture</option>
+                                </select>
+
+                            </div>
+
+                            <!-- Section -->
+                            <div class="bg-black/40 border border-gray-800 rounded-3xl p-6 hover:border-violet-500 transition-all duration-300">
+
+                                <label class="block text-sm text-gray-400 mb-3 uppercase tracking-wider font-semibold">
+                                    Section
+                                </label>
+
+                                <select
+                                    name="section"
+                                    class="w-full bg-transparent text-xl font-bold outline-none text-violet-400"
+                                >
+                                    <option class="bg-gray-900">M1</option>
+                                    <option class="bg-gray-900">M2</option>
+                                    <option class="bg-gray-900">E1</option>
+                                    <option class="bg-gray-900">E2</option>
+                                    <option class="bg-gray-900">E3</option>
+                                    <option class="bg-gray-900">E4</option>
+                                </select>
+
+                            </div>
+
+                            <!-- Shift -->
+                            <div class="bg-black/40 border border-gray-800 rounded-3xl p-6 hover:border-emerald-500 transition-all duration-300">
+
+                                <label class="block text-sm text-gray-400 mb-3 uppercase tracking-wider font-semibold">
+                                    Shift
+                                </label>
+
+                                <select
+                                    name="shift"
+                                    class="w-full bg-transparent text-xl font-bold outline-none text-emerald-400"
+                                >
+                                    <option class="bg-gray-900">Morning</option>
+                                    <option class="bg-gray-900">Evening</option>
+                                </select>
+
+                            </div>
+
+                        </div>
+
+                        <!-- BUTTONS -->
+                        <div class="mt-10 flex flex-wrap gap-4 no-print">
+
+                            <button
+                                type="submit"
+                                class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 hover:scale-105 shadow-lg shadow-blue-500/30 px-8 py-4 rounded-2xl text-lg font-bold transition-all duration-300"
+                            >
+                                Update Result Sheet
+                            </button>
+
+                            <button
+                                type="reset"
+                                class="bg-gray-700 hover:bg-gray-600 hover:scale-105 px-8 py-4 rounded-2xl text-lg font-bold transition-all duration-300"
+                            >
+                                Reset Form
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+                <!-- RIGHT -->
+                <div class="xl:w-80">
+
+                    <div class="bg-black/40 border border-gray-800 rounded-[2rem] p-8 h-full flex flex-col justify-between shadow-xl print-white">
+
+                        <div>
+
+                            <p class="text-gray-400 text-xl mb-4">
+                                Logged in as
+                            </p>
+
+                            <h2 class="text-5xl font-black text-white break-words">
+                                {{ session.user_name }} 👋
+                            </h2>
+
+                        </div>
+
+                        <div class="mt-12">
+
+                            <p class="text-gray-400 text-xl mb-3">
+                                Total Students
+                            </p>
+
+                            <h2 class="text-7xl font-black text-blue-400">
+                                {{ students|length if students else 0 }}
+                            </h2>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Search -->
+        <div class="flex flex-col md:flex-row gap-4 mb-10 no-print">
+
+            <form method="GET" class="flex-1">
+
+                <input
+                    type="text"
+                    name="search"
+                    value="{{ search }}"
+                    placeholder="🔍 Search by student name or AG number..."
+                    class="w-full bg-gray-900 border border-gray-700 focus:border-blue-500 rounded-3xl px-6 py-5 outline-none text-lg transition-all"
+                >
+
+            </form>
+
+            <a href="{{ url_for('all_students') }}"
+               class="bg-gray-800 hover:bg-gray-700 px-10 py-5 rounded-3xl flex items-center justify-center font-semibold transition-all">
+                Clear
+            </a>
+
+        </div>
+
+        {% if students %}
+
+        <!-- TABLE -->
+        <div class="bg-gray-900 border border-gray-800 rounded-[2rem] overflow-hidden shadow-2xl print-white">
+
+            <div class="overflow-x-auto">
+
+                <table class="w-full">
+
+                    <thead>
+
+                        <tr class="bg-black/40 border-b border-gray-700">
+
+                            <th class="px-6 py-6 text-left text-lg">
+                                #
+                            </th>
+
+                            <th class="px-6 py-6 text-left text-lg">
+                                Student Name
+                            </th>
+
+                            <th class="px-6 py-6 text-left text-lg">
+                                AG Number
+                            </th>
+
+                            <th class="px-6 py-6 text-center text-lg">
+                                Subjects
+                            </th>
+
+                            <th class="px-6 py-6 text-center text-lg">
+                                Average %
+                            </th>
+
+                            <th class="px-6 py-6 text-center text-lg">
+                                GPA
+                            </th>
+
+                            <th class="px-6 py-6 text-center no-print text-lg">
+                                Actions
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody class="divide-y divide-gray-800">
+
+                        {% for student in students %}
+
+                        <tr class="hover:bg-gray-800/50 transition-all duration-300">
+
+                            <td class="px-6 py-6 text-gray-400 font-semibold">
+                                {{ loop.index }}
+                            </td>
+
+                            <td class="px-6 py-6 text-xl font-bold">
+                                {{ student.student_name }}
+                            </td>
+
+                            <td class="px-6 py-6 text-gray-300 text-lg">
+                                {{ student.ag_number }}
+                            </td>
+
+                            <td class="px-6 py-6 text-center">
+
+                                <span class="bg-blue-900/40 text-blue-300 px-5 py-2 rounded-full font-bold">
+                                    {{ student.subject_count }}
+                                </span>
+
+                            </td>
+
+                            <td class="px-6 py-6 text-center text-2xl font-black text-blue-400">
+                                {{ student.avg_percentage if student.avg_percentage else '0' }}%
+                            </td>
+
+                            <td class="px-6 py-6 text-center text-2xl font-black text-emerald-400">
+                                {{ student.gpa if student.gpa else '0.00' }}
+                            </td>
+
+                            <td class="px-6 py-6 no-print">
+
+                                <div class="flex flex-wrap justify-center gap-3">
+
+                                    <a href="{{ url_for('student_detail', student_id=student.id) }}"
+                                       class="bg-blue-600 hover:bg-blue-700 px-5 py-3 rounded-2xl text-sm font-semibold transition-all">
+                                        View
+                                    </a>
+
+                                    <a href="{{ url_for('edit_student', student_id=student.id) }}"
+                                       class="bg-sky-600 hover:bg-sky-700 px-5 py-3 rounded-2xl text-sm font-semibold transition-all">
+                                        Edit
+                                    </a>
+
+                                    <form method="POST"
+                                          action="{{ url_for('delete_student', student_id=student.id) }}"
+                                          onsubmit="return confirm('Delete this student record?');">
+
+                                        <button type="submit"
+                                                class="bg-red-600 hover:bg-red-700 px-5 py-3 rounded-2xl text-sm font-semibold transition-all">
+                                            Delete
+                                        </button>
+
+                                    </form>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+        {% else %}
+
+        <!-- Empty -->
+        <div class="bg-gray-900 border border-gray-800 rounded-[2rem] py-24 text-center">
+
+            <div class="text-8xl mb-6">
+                📚
+            </div>
+
+            <h2 class="text-5xl font-black mb-5">
+                No Student Records Found
+            </h2>
+
+            <p class="text-gray-400 text-xl mb-10">
+                Start adding students to generate professional result sheets.
+            </p>
+
+            <a href="{{ url_for('prediction') }}"
+               class="inline-block bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 px-10 py-5 rounded-3xl text-lg font-bold transition-all">
+                + Add First Student
+            </a>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</body>
+</html>
